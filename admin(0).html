@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SASTA ANIME - Admin Control Panel</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Hind+Siliguri:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: #10141f;
+            --input-bg: #171d2c;
+            --sky-blue: #00f0ff;
+            --sky-glow: 0 0 15px rgba(0, 240, 255, 0.4);
+            --neon-red: #ff004c;
+            --red-glow: 0 0 15px rgba(255, 0, 76, 0.4);
+            --text-light: #f5f6fa;
+            --text-muted: #8a98a5;
+            --border: rgba(255, 255, 255, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Hind Siliguri', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #login-gate {
+            background: var(--card-bg);
+            border: 1px solid var(--sky-blue);
+            box-shadow: var(--sky-glow);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #admin-panel-wrapper {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        h2, h3, h4 {
+            color: var(--sky-blue);
+            text-shadow: var(--sky-glow);
+            margin-bottom: 20px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            border-color: var(--sky-blue);
+            box-shadow: var(--sky-glow);
+            transform: translateY(-2px);
+        }
+
+        .stat-card h5 {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .stat-card p {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--sky-blue);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 10px;
+            color: #fff;
+            outline: none;
+            font-size: 0.95rem;
+            transition: var(--transition);
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--sky-blue);
+            box-shadow: var(--sky-glow);
+        }
+
+        .btn {
+            background: var(--sky-blue);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sky-glow);
+        }
+
+        .btn-danger {
+            background: var(--neon-red);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            box-shadow: var(--red-glow);
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media(min-width: 768px) {
+            .admin-grid {
+                grid-template-columns: 1.2fr 1.8fr;
+            }
+        }
+
+        .tabs-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--sky-blue);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .list-container {
+            max-height: 550px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-info img {
+            width: 50px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .badge-18plus { background: var(--neon-red); color: white; }
+        .badge-anime { background: #00ff73; color: black; }
+        .badge-movies { background: #ffaa00; color: black; }
+        .badge-general { background: #0099ff; color: white; }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 5px;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover { color: var(--sky-blue); }
+        .icon-btn.delete:hover { color: var(--neon-red); }
+
+        .progress-box {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--sky-blue);
+            box-shadow: var(--sky-glow);
+            width: 0%;
+            border-radius: 4px;
+            transition: width 0.1s ease;
+        }
+
+        .banner-card {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .banner-card img {
+            width: 100px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .advisory-box {
+            background: rgba(0, 240, 255, 0.04);
+            border: 1px solid var(--sky-blue);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .advisory-box i {
+            color: var(--sky-blue);
+            font-size: 1.4rem;
+            margin-top: 2px;
+        }
+
+        .advisory-box p {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="admin-toast">সফলভাবে সম্পন্ন হয়েছে!</div>
+
+    <!-- Login Gate -->
+    <div id="login-gate">
+        <i class="fa-solid fa-user-shield" style="font-size: 4rem; color: var(--sky-blue); margin-bottom: 15px;"></i>
+        <h2>অ্যাডমিন অথেন্টিকেশন</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">SASTA ANIME ডেটাবেস কন্ট্রোল সিস্টেম</p>
+        <div class="form-group">
+            <label for="admin-pass">সিক্রেট পাসওয়ার্ড প্রবেশ করুন</label>
+            <input type="password" id="admin-pass" placeholder="পাসওয়ার্ড লিখুন...">
+        </div>
+        <button class="btn" style="width: 100%; justify-content: center;" onclick="verifyAdminAccess()">প্রবেশ করুন</button>
+    </div>
+
+    <!-- Admin Panel Layout -->
+    <div id="admin-panel-wrapper">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h2>SASTA ANIME Control Panel</h2>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">ফায়ারবেস রিয়েলটাইম এবং স্টোরেজ কন্ট্রোলার</p>
+            </div>
+            <button class="btn btn-danger" onclick="logoutAdmin()"><i class="fa-solid fa-power-off"></i> লগআউট</button>
+        </div>
+
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTab('control-panel')"><i class="fa-solid fa-chart-line"></i> কন্ট্রোল প্যানেল</button>
+            <button class="tab-btn" onclick="switchTab('manage-content')"><i class="fa-solid fa-film"></i> কন্টেন্ট ম্যানেজমেন্ট</button>
+            <button class="tab-btn" onclick="switchTab('ad-system')"><i class="fa-solid fa-rectangle-ad"></i> এড সিস্টেম</button>
+            <button class="tab-btn" onclick="switchTab('logo-banners')"><i class="fa-solid fa-image"></i> লোগো এবং ব্যানার</button>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-box" id="upload-progress-box">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
+                <span id="upload-status-text">মিডিয়া আপলোড হচ্ছে...</span>
+                <span id="upload-percentage">0%</span>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                <div class="progress-bar" id="upload-progress-bar"></div>
+            </div>
+        </div>
+
+        <!-- TAB 1: CONTROL PANEL / DASHBOARD -->
+        <div id="control-panel" class="tab-content active" style="margin-top: 20px;">
+            <h3>রিয়েল-টাইম কন্ট্রোল এবং পরিসংখ্যান</h3>
+            <div class="analytics-grid">
+                <div class="stat-card">
+                    <h5>মোট ইউজার ভিজিট</h5>
+                    <p id="stat-total-visits">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>সক্রিয় ইউজার (ইউনিক কানেকশন)</h5>
+                    <p id="stat-active-users">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট ওয়াচ (ভিডিও প্লে)</h5>
+                    <p id="stat-total-watches">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট এড ক্লিক সংখ্যা</h5>
+                    <p id="stat-ad-clicks">0</p>
+                </div>
+            </div>
+            <div class="analytics-grid" style="grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));">
+                <div class="stat-card">
+                    <h5>মোট এনিমি</h5>
+                    <p id="count-anime">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট মুভি</h5>
+                    <p id="count-movies">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট এনিমেশন</h5>
+                    <p id="count-animation">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট ড্রামা</h5>
+                    <p id="count-dramas">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট নাটক</h5>
+                    <p id="count-natok">0</p>
+                </div>
+                <div class="stat-card">
+                    <h5>মোট ১৮+ কন্টেন্ট</h5>
+                    <p id="count-18plus">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: CONTENT MANAGEMENT -->
+        <div id="manage-content" class="tab-content">
+            <div class="advisory-box">
+                <i class="fa-solid fa-cloud-bolt" style="color: var(--sky-blue);"></i>
+                <div>
+                    <strong style="color: var(--sky-blue); font-size: 0.9rem; display: block; margin-bottom: 4px;">ছবি ও ব্যানার ১ সেকেন্ডে আপলোড করার বিশেষ সমাধান:</strong>
+                    <p>আপনার মোবাইল বা গ্যালারির যত বড় সাইজের ছবি (৫ বা ১০ মেগাবাইট) হোক না কেন, এখানে আপলোড করার সময় ব্যাকগ্রাউন্ডে একটি **স্মার্ট ইমেজ কম্প্রেশন** রান করে ছবিটির কোয়ালিটি ঠিক রেখে সাইজটি কয়েক কিলোবাইটে নামিয়ে আনবে। এর ফলে ছবি বা থাম্বনেইল এখন থেকে **১ সেকেন্ডেই আপলোড হয়ে যাবে** [INDEX]! ভিডিও আপলোডের ক্ষেত্রে, খুব বড় ভিডিও সরাসরি স্টোরেজে আপলোড না করে গুগল ড্রাইভ, টেলিগ্রাম বা ওয়ানড্রাইভে আপলোড দিয়ে তার সাধারণ শেয়ারিং লিংকটি এখানে পেস্ট করতে পারেন, যা পলকেই সেভ হবে এবং প্লেব্যাক বাফারিং সমস্যাও দূর করবে [INDEX]।</p>
+                </div>
+            </div>
+
+            <div class="admin-grid">
+                <!-- FORM -->
+                <div>
+                    <h3 id="form-title">নতুন কন্টেন্ট যুক্ত করুন</h3>
+                    <form id="content-form" onsubmit="handleFormSubmission(event)">
+                        <input type="hidden" id="edit-index" value="">
+                        
+                        <div class="form-group">
+                            <label>কন্টেন্ট টাইটেল (Title)</label>
+                            <input type="text" id="title" required placeholder="যেমন: Demon Slayer S4">
+                        </div>
+
+                        <div class="form-group">
+                            <label>ক্যাটাগরি (Category)</label>
+                            <select id="category" onchange="checkCategoryAdvisory()" required>
+                                <option value="anime">Anime</option>
+                                <option value="movies">Movies</option>
+                                <option value="animation">Animation Movies</option>
+                                <option value="dramas">Dramas</option>
+                                <option value="natok">Natok</option>
+                                <option value="18plus">18+ (Adult Content)</option>
+                            </select>
+                            <small id="category-warning" style="color: var(--neon-red); display: none; margin-top: 5px;">
+                                ⚠️ সতর্কবার্তা: ১৮+ সেকশনটি সচল করা হয়েছে। এই ক্যাটাগরির কন্টেন্ট প্রটেক্টেড জোনে শো করবে।
+                            </small>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>রেটিং (Rating)</label>
+                                <input type="text" id="rating" required placeholder="যেমন: 9.8">
+                            </div>
+                            <div class="form-group">
+                                <label>টাইপ (Type)</label>
+                                <select id="type">
+                                    <option value="Trending">Trending</option>
+                                    <option value="Popular">Popular</option>
+                                    <option value="Latest">Latest</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ভাষা / অডিও ট্র্যাক (Language)</label>
+                            <select id="language">
+                                <option value="Bangla Dubbed">Bangla Dubbed</option>
+                                <option value="English Dubbed">English Dubbed</option>
+                                <option value="Hindi Dubbed">Hindi Dubbed</option>
+                                <option value="Japanese">Japanese Audio</option>
+                                <option value="Chinese">Chinese Audio</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>ভিডিও থাম্বনেইল আপলোড ( Thumbnail Image - Gallery )</label>
+                            <input type="file" id="thumbnail-file" accept="image/*">
+                            <input type="text" id="thumbnail-url" placeholder="অথবা সরাসরি ইমেজের লিংক দিন...">
+                        </div>
+
+                        <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;">
+                            <h4 style="font-size: 1rem; color: var(--sky-blue);">মাল্টি-কোয়ালিটি ভিডিও স্ট্রিমিং লিঙ্ক (ভিডিও ফাইল সিলেক্ট করুন অথবা লিঙ্ক দিন)</h4>
+                        </div>
+
+                        <div class="form-group">
+                            <label>১০৮০p কোয়ালিটি লিংক (1080p URL)</label>
+                            <input type="file" id="video-file-1080" accept="video/*">
+                            <input type="text" id="videoUrl-1080" oninput="autoConvertDriveLink(this)" placeholder="১০৮০p ভিডিও সোর্স লিংক (গুগল ড্রাইভ লিংক দিলে তা অটো কনভার্ট হবে)...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>৭২০p কোয়ালিটি লিংক (720p URL)</label>
+                            <input type="file" id="video-file-720" accept="video/*">
+                            <input type="text" id="videoUrl-720" oninput="autoConvertDriveLink(this)" placeholder="৭২০p ভিডিও সোর্স লিংক...">
+                        </div>
+
+                        <div class="form-group">
+                            <label>৪৮০p কোয়ালিটি লিংক (480p URL)</label>
+                            <input type="file" id="video-file-480" accept="video/*">
+                            <input type="text" id="videoUrl-480" oninput="autoConvertDriveLink(this)" placeholder="৪৮০p ভিডিও সোর্স লিংক...">
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid var(--border); margin-top: 15px; padding-top: 15px;">
+                            <div class="form-group">
+                                <label>মোট সিজন (Total Seasons)</label>
+                                <input type="number" id="totalSeasons" min="1" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label>সিজন প্রতি এপিসোড সংখ্যা</label>
+                                <input type="number" id="episodesPerSeason" min="1" value="1">
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="submit" class="btn" style="flex: 1; justify-content: center;"><i class="fa-solid fa-circle-check"></i> সংরক্ষণ করুন</button>
+                            <button type="button" id="cancel-btn" class="btn btn-danger" style="display: none;" onclick="resetFormState()"><i class="fa-solid fa-xmark"></i> বাতিল</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- LIST -->
+                <div>
+                    <h3>বর্তমান কন্টেন্ট সমূহের তালিকা</h3>
+                    <div class="list-container" id="content-list-renderer">
+                        <div style="padding: 20px; text-align: center; color: var(--text-muted);">ফায়ারবেস থেকে ডেটা লোড হচ্ছে...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: AD SYSTEM -->
+        <div id="ad-system" class="tab-content">
+            <div style="max-width: 750px;">
+                <h3>ডাইনামিক অ্যাডভার্টাইজমেন্ট সেটিংস</h3>
+                <form onsubmit="handleAdUpdate(event)" style="background: rgba(0,0,0,0.15); padding: 25px; border-radius: 15px; border: 1px solid var(--border);">
+                    
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>১. অফিশিয়াল অ্যাপ ডাউনলোড গন্তব্য লিংক</label>
+                        <input type="url" id="ad-downloadApkUrl" required placeholder="https://example.com/app.apk">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>২. অ্যাপ ডাউনলোডের পূর্বের ৫ সেকেন্ডের এড ইমেজ এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-before-dl-file" accept="image/*">
+                        <input type="url" id="ad-beforeDownload" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক (গ্যালারি থেকে আপলোড করলে এটি অটো পূর্ণ হবে)...">
+                        <input type="url" id="ad-beforeDownload-click" placeholder="বিজ্ঞাপনটির ক্লিক/Redirect লিংক বসান (যেমন: Adsterra Direct Link)...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৩. ভিডিও প্লেয়ারের উপরের ব্যানার এড এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-player-top-file" accept="image/*">
+                        <input type="url" id="ad-playerTop" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক...">
+                        <input type="url" id="ad-playerTop-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৪. ভিডিও প্লেয়ারের নিচের ব্যানার এড এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-player-bottom-file" accept="image/*">
+                        <input type="url" id="ad-playerBottom" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক...">
+                        <input type="url" id="ad-playerBottom-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৫. ভিডিও শুরু হওয়ার পূর্বের ৫ সেকেন্ডের প্রি-রোল এড এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-preroll-file" accept="video/*">
+                        <input type="url" id="ad-preRoll" placeholder="বিজ্ঞাপন ভিডিও সোর্স লিংক...">
+                        <input type="url" id="ad-preRoll-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৬. হোম পেজ প্রথম স্পন্সরড ব্যানার এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-home-first-file" accept="image/*">
+                        <input type="url" id="ad-homeFirst" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক...">
+                        <input type="url" id="ad-homeFirst-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৭. হোম পেজ দ্বিতীয় স্পন্সরড ব্যানার এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-home-second-file" accept="image/*">
+                        <input type="url" id="ad-homeSecond" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক...">
+                        <input type="url" id="ad-homeSecond-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 15px;">
+                        <label>৮. হোম পেজ তৃতীয় স্পন্সরড ব্যানার এবং ক্লিক লিংক</label>
+                        <input type="file" id="ad-home-third-file" accept="image/*">
+                        <input type="url" id="ad-homeThird" placeholder="বিজ্ঞাপন ইমেজের সোর্স লিংক...">
+                        <input type="url" id="ad-homeThird-click" placeholder="বিজ্ঞাপনটির ক্লিক/ডেস্টিনেশন লিংক বসান...">
+                    </div>
+
+                    <button type="submit" class="btn" style="margin-top: 15px;"><i class="fa-solid fa-floppy-disk"></i> এড সিস্টেম সংরক্ষণ করুন</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 4: LOGO & MULTI-BANNER SLIDER -->
+        <div id="logo-banners" class="tab-content">
+            <div class="admin-grid">
+                <!-- Branding -->
+                <div>
+                    <h3>ব্র্যান্ডিং এবং লোগো সেটিংস</h3>
+                    <form onsubmit="handleLogoUpdate(event)" style="background: rgba(0,0,0,0.15); padding: 25px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 30px;">
+                        <div class="form-group">
+                            <label>অ্যাপের ব্র্যান্ড নাম (Text Logo)</label>
+                            <input type="text" id="config-logoText" required placeholder="যেমন: SASTA ANIME">
+                        </div>
+                        <div class="form-group">
+                            <label>অ্যাপ লোগো ইমেজ আপলোড (Logo Image)</label>
+                            <input type="file" id="config-logo-file" accept="image/*">
+                            <input type="url" id="config-logoUrl" placeholder="অথবা লোগোর লিংক দিন...">
+                        </div>
+                        <button type="submit" class="btn"><i class="fa-solid fa-circle-check"></i> ব্র্যান্ডিং আপডেট করুন</button>
+                    </form>
+                </div>
+
+                <!-- Multi-banner Manager -->
+                <div>
+                    <h3>মাল্টি-ব্যানার স্লাইডার কন্ট্রোল (Slider Control)</h3>
+                    <form onsubmit="handleBannerAdd(event)" style="background: rgba(0,0,0,0.15); padding: 25px; border-radius: 15px; border: 1px solid var(--border); margin-bottom: 25px;">
+                        <div class="form-group">
+                            <label>ব্যানার টাইটেল (Title)</label>
+                            <input type="text" id="banner-title" required placeholder="যেমন: Demon Slayer Season 4">
+                        </div>
+                        <div class="form-group">
+                            <label>ব্যানার নাম (Name)</label>
+                            <input type="text" id="banner-name" required placeholder="যেমন: তানজিরো অভিযান">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>ব্যানার সিজন (Season)</label>
+                                <input type="text" id="banner-season" required placeholder="যেমন: সিজন ৪">
+                            </div>
+                            <div class="form-group">
+                                <label>ব্যানার ট্যাগ (Tag Line)</label>
+                                <input type="text" id="banner-tag" required placeholder="যেমন: Anime Featured">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>ব্যানার ব্যাকগ্রাউন্ড ইমেজ আপলোড (BG Image)</label>
+                            <input type="file" id="banner-bg-file" accept="image/*">
+                            <input type="url" id="banner-bgImage" placeholder="অথবা সরাসরি ব্যাকগ্রাউন্ড ইমেজ লিংক দিন...">
+                        </div>
+                        <button type="submit" class="btn"><i class="fa-solid fa-plus"></i> নতুন স্লাইড যোগ করুন</button>
+                    </form>
+
+                    <h4>সক্রিয় স্লাইডার ব্যানারসমূহ</h4>
+                    <div id="banner-list-renderer" style="margin-top: 15px;">
+                        <div style="padding: 15px; text-align: center; color: var(--text-muted);">কোনো ব্যানার সক্রিয় নেই।</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Compat SDKs (লাইব্রেরি লিঙ্ক) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+
+    <script>
+        // ====================================================================
+        // FIREBASE INITIALIZATION
+        // ====================================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoraplSvTACc7bINtp5iwf9CcqTY9UJsQ",
+            authDomain: "sasta-anime.firebaseapp.com",
+            databaseURL: "https://sasta-anime-default-rtdb.firebaseio.com",
+            projectId: "sasta-anime",
+            storageBucket: "sasta-anime.firebasestorage.app",
+            messagingSenderId: "1059740793289",
+            appId: "1:1059740793289:web:fab43d610b0ce8d05a9018"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        let localMediaDatabase = [];
+        let localBanners = [];
+        const SEC_PASS = "sastaadmin123";
+
+        // Auth validation
+        function verifyAdminAccess() {
+            const inputPass = document.getElementById('admin-pass').value;
+            if (inputPass === SEC_PASS) {
+                document.getElementById('login-gate').style.display = 'none';
+                document.getElementById('admin-panel-wrapper').style.display = 'block';
+                showToast("সফলভাবে লগইন করা হয়েছে!");
+                initAdminSync();
+            } else {
+                alert("ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('login-gate').style.display = 'block';
+            document.getElementById('admin-panel-wrapper').style.display = 'none';
+            document.getElementById('admin-pass').value = '';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('admin-toast');
+            toast.innerText = message;
+            toast.style.top = "20px";
+            setTimeout(() => { toast.style.top = "-100px"; }, 3000);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function checkCategoryAdvisory() {
+            const cat = document.getElementById('category').value;
+            const warning = document.getElementById('category-warning');
+            if (cat === "18plus") {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        // ====================================================================
+        // 🌟 গুগল ড্রাইভ শেয়ার লিংক ডিরেক্ট স্ট্রিমিং লিংকে রূপান্তর করার মেথড
+        // ====================================================================
+        function autoConvertDriveLink(inputElement) {
+            const url = inputElement.value.trim();
+            const regex = /\/d\/([a-zA-Z0-9-_]+)/;
+            const match = url.match(regex);
+            if (match && match[1]) {
+                const directLink = `https://docs.google.com/uc?export=download&id=${match[1]}`;
+                inputElement.value = directLink;
+                showToast("গুগল ড্রাইভ লিংক সফলভাবে ডিরেক্ট স্ট্রিমিং লিংকে কনভার্ট করা হয়েছে!");
+            }
+        }
+
+        // ====================================================================
+        // 🌟 লোগো এবং ইমেজ আপলোড ১ সেকেন্ডে করার জন্য সুপার কম্প্রেশন
+        // ====================================================================
+        function compressImage(file, maxWidth = 1000, maxHeight = 650, quality = 0.6) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // ছবি PNG না হলে সাদা ব্যাকগ্রাউন্ড ফিল দিয়ে ট্রান্সপারেন্ট PNG এর কালো হয়ে যাওয়া রোধ করা [INDEX]
+                        if (file.type !== 'image/png') {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, width, height);
+                        }
+                        
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+                        canvas.toBlob((blob) => {
+                            const compressedFile = new File([blob], file.name, {
+                                type: mimeType,
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        }, mimeType, quality); // কম্প্রেশন কোয়ালিটি ০.৬ নির্ধারণ (মেগাবাইট থেকে কিলোবাইটে রূপান্তর) [INDEX]
+                    };
+                    img.src = event.target.result; // onload ডিফাইন করার পরেই সোর্স সেট করতে হবে [INDEX]
+                };
+            });
+        }
+
+        // ====================================================================
+        // FIREBASE FILE UPLOAD HELPER (কম্প্রেশন সহ ডাইনামিক আপলোডার)
+        // ====================================================================
+        async function uploadMediaFile(fileInputId, inputUrlId, storageFolderPath) {
+            return new Promise(async (resolve) => {
+                const fileInput = document.getElementById(fileInputId);
+                const urlInput = document.getElementById(inputUrlId);
+                let file = fileInput.files[0];
+
+                if (!file) {
+                    resolve(urlInput.value || ''); // নো ফাইল থাকলে আগের ইউআরএল রির্টান করবে
+                    return;
+                }
+
+                // যদি লোগো আপলোড করা হয় (Branding Folder) তবে সেটিকে সুপার কম্প্রেসড করা হবে যাতে ০.১ সেকেন্ডে আপলোড হয়
+                if (file.type.startsWith('image/')) {
+                    let widthLimit = 1000;
+                    let heightLimit = 650;
+                    let qualityLimit = 0.6;
+                    
+                    if (storageFolderPath === 'branding') {
+                        widthLimit = 250;
+                        heightLimit = 250;
+                        qualityLimit = 0.5; // লোগো ফাইলের সাইজ মাত্র ৫ কিলোবাইটে নেমে আসবে [INDEX]
+                    }
+                    file = await compressImage(file, widthLimit, heightLimit, qualityLimit);
+                }
+
+                const progressBox = document.getElementById('upload-progress-box');
+                const progressBar = document.getElementById('upload-progress-bar');
+                const progressPercent = document.getElementById('upload-percentage');
+                const statusText = document.getElementById('upload-status-text');
+
+                // যদি বড় ভিডিও ফাইল সিলেক্ট করা হয় তবে সতর্ক করা হবে [INDEX]
+                if (file.size > (30 * 1024 * 1024) && file.type.startsWith('video/')) {
+                    alert(`সতর্কতা: আপনার ফাইল সাইজটি অনেক বড় (${(file.size / (1024 * 1024)).toFixed(2)} MB)। এটি আপলোড হতে বেশি সময় নিতে পারে এবং দৈনিক ফ্রি ব্যান্ডউইথ দ্রুত শেষ হয়ে যাবে। আমরা ভিডিও লিংক ইনপুট করার পরামর্শ দিচ্ছি।`);
+                }
+
+                progressBox.style.display = 'block';
+                statusText.innerText = `আপলোড হচ্ছে: ${file.name} (${(file.size / (1024 * 1024)).toFixed(2)} MB)`;
+
+                const uniqueFileName = `${Date.now()}_${file.name}`;
+                const storageRef = storage.ref().child(`${storageFolderPath}/${uniqueFileName}`);
+                const metadata = { contentType: file.type };
+                const uploadTask = storageRef.put(file, metadata);
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                        progressBar.style.width = `${progress}%`;
+                        progressPercent.innerText = `${progress}%`;
+                    }, 
+                    (error) => {
+                        console.error("Upload error:", error);
+                        alert("ফাইল আপলোডে ত্রুটি দেখা দিয়েছে!");
+                        progressBox.style.display = 'none';
+                        resolve('');
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            progressBar.style.width = '0%';
+                            progressBox.style.display = 'none';
+                            resolve(downloadURL);
+                        });
+                    }
+                );
+            });
+        }
+
+        // ====================================================================
+        // REALTIME DATABASE DATA SYNC
+        // ====================================================================
+        function initAdminSync() {
+            // ১. লাইভ কন্ট্রোল প্যানেল স্ট্যাটিস্টিকস
+            database.ref('analytics').on('value', (snapshot) => {
+                const stats = snapshot.val() || {};
+                document.getElementById('stat-total-visits').innerText = stats.totalVisits || 0;
+                document.getElementById('stat-total-watches').innerText = stats.totalWatches || 0;
+                document.getElementById('stat-ad-clicks').innerText = stats.adClicks || 0;
+            });
+
+            // 🌟 ইউনিক একটিভ কানেকশন সেশন গণনা (ড্রিফটিং ও ড্যাশবোর্ডের পরিসংখ্যান সমস্যার স্থায়ী সমাধান) [INDEX, INDEX]
+            database.ref('analytics/activeConnections').on('value', (snapshot) => {
+                const activeCount = snapshot.numChildren() || 0;
+                document.getElementById('stat-active-users').innerText = activeCount;
+            });
+
+            // ২. অ্যাপ কন্টেন্ট ডাটাবেস এবং ক্যাটাগরি কাউন্টার
+            database.ref('streamingMediaDatabase').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    localMediaDatabase = Array.isArray(data) ? data : Object.values(data);
+                    renderItemsOnDashboard();
+                    calculateCategoryCounts();
+                } else {
+                    localMediaDatabase = [];
+                    document.getElementById('content-list-renderer').innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: var(--text-muted);">ডাটাবেসে কোনো ডেটা পাওয়া যায়নি!</div>
+                    `;
+                }
+            });
+
+            // ৩. অ্যাপ কনফিগারেশন এবং এড সিস্টেম সেটিংস (নিরাপদ ব্রাউজার রেন্ডারিং মেথড)
+            database.ref('ADMIN_CONFIG').on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const cfg = snapshot.val();
+                    document.getElementById('config-logoText').value = cfg.logoText || '';
+                    document.getElementById('config-logoUrl').value = cfg.logoUrl || '';
+                    document.getElementById('ad-downloadApkUrl').value = cfg.downloadApkUrl || '';
+                    
+                    const ads = cfg.ads || {};
+                    document.getElementById('ad-beforeDownload').value = (ads.beforeDownload && ads.beforeDownload.imgUrl) ? ads.beforeDownload.imgUrl : '';
+                    document.getElementById('ad-beforeDownload-click').value = (ads.beforeDownload && ads.beforeDownload.clickUrl) ? ads.beforeDownload.clickUrl : '';
+                    document.getElementById('ad-playerTop').value = (ads.playerTop && ads.playerTop.imgUrl) ? ads.playerTop.imgUrl : '';
+                    document.getElementById('ad-playerTop-click').value = (ads.playerTop && ads.playerTop.clickUrl) ? ads.playerTop.clickUrl : '';
+                    document.getElementById('ad-playerBottom').value = (ads.playerBottom && ads.playerBottom.imgUrl) ? ads.playerBottom.imgUrl : '';
+                    document.getElementById('ad-playerBottom-click').value = (ads.playerBottom && ads.playerBottom.clickUrl) ? ads.playerBottom.clickUrl : '';
+                    document.getElementById('ad-preRoll').value = (ads.preRoll && ads.preRoll.videoUrl) ? ads.preRoll.videoUrl : '';
+                    document.getElementById('ad-preRoll-click').value = (ads.preRoll && ads.preRoll.clickUrl) ? ads.preRoll.clickUrl : '';
+                    document.getElementById('ad-homeFirst').value = (ads.homeFirst && ads.homeFirst.imgUrl) ? ads.homeFirst.imgUrl : '';
+                    document.getElementById('ad-homeFirst-click').value = (ads.homeFirst && ads.homeFirst.clickUrl) ? ads.homeFirst.clickUrl : '';
+                    document.getElementById('ad-homeSecond').value = (ads.homeSecond && ads.homeSecond.imgUrl) ? ads.homeSecond.imgUrl : '';
+                    document.getElementById('ad-homeSecond-click').value = (ads.homeSecond && ads.homeSecond.clickUrl) ? ads.homeSecond.clickUrl : '';
+                    document.getElementById('ad-homeThird').value = (ads.homeThird && ads.homeThird.imgUrl) ? ads.homeThird.imgUrl : '';
+                    document.getElementById('ad-homeThird-click').value = (ads.homeThird && ads.homeThird.clickUrl) ? ads.homeThird.clickUrl : '';
+
+                    localBanners = cfg.banners || [];
+                    renderBanners();
+                }
+            });
+        }
+
+        function calculateCategoryCounts() {
+            const counts = { anime: 0, movies: 0, animation: 0, dramas: 0, natok: 0, '18plus': 0 };
+            localMediaDatabase.forEach(item => {
+                if (counts[item.category] !== undefined) {
+                    counts[item.category]++;
+                }
+            });
+            document.getElementById('count-anime').innerText = counts.anime;
+            document.getElementById('count-movies').innerText = counts.movies;
+            document.getElementById('count-animation').innerText = counts.animation;
+            document.getElementById('count-dramas').innerText = counts.dramas;
+            document.getElementById('count-natok').innerText = counts.natok;
+            document.getElementById('count-18plus').innerText = counts['18plus'];
+        }
+
+        function renderItemsOnDashboard() {
+            const container = document.getElementById('content-list-renderer');
+            container.innerHTML = '';
+
+            localMediaDatabase.forEach((item, index) => {
+                let badgeClass = "badge-general";
+                if(item.category === "18plus") badgeClass = "badge-18plus";
+                else if(item.category === "anime") badgeClass = "badge-anime";
+                else if(item.category === "movies") badgeClass = "badge-movies";
+
+                container.innerHTML += `
+                    <div class="list-item">
+                        <div class="item-info">
+                            <img src="${item.image || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=300'}" alt="thumb">
+                            <div class="item-details">
+                                <h4>${item.title}</h4>
+                                <span class="badge ${badgeClass}">${item.category}</span>
+                                <small style="color: var(--text-muted); margin-left: 10px;">ID: ${item.id}</small>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="icon-btn" onclick="prepareEditForm(${index})" title="এডিট করুন"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button class="icon-btn delete" onclick="deleteContentFromDb(${index})" title="ডিলিট করুন"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ====================================================================
+        // CRUD OPERATION - HANDLERS
+        // ====================================================================
+        async function handleFormSubmission(e) {
+            e.preventDefault();
+
+            const editIndex = document.getElementById('edit-index').value;
+
+            // আপলোডিং ফাইলস লজিক
+            const uploadedThumbnail = await uploadMediaFile('thumbnail-file', 'thumbnail-url', 'thumbnails');
+            const uploadedVideo1080 = await uploadMediaFile('video-file-1080', 'videoUrl-1080', 'videos_1080');
+            const uploadedVideo720 = await uploadMediaFile('video-file-720', 'videoUrl-720', 'videos_720');
+            const uploadedVideo480 = await uploadMediaFile('video-file-480', 'videoUrl-480', 'videos_480');
+
+            const newContent = {
+                id: editIndex !== "" ? localMediaDatabase[parseInt(editIndex)].id : new Date().getTime(),
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                rating: document.getElementById('rating').value,
+                type: document.getElementById('type').value,
+                language: document.getElementById('language').value,
+                image: uploadedThumbnail,
+                videoUrl_1080: uploadedVideo1080,
+                videoUrl_720: uploadedVideo720,
+                videoUrl_480: uploadedVideo480,
+                totalSeasons: parseInt(document.getElementById('totalSeasons').value) || 1,
+                episodesPerSeason: parseInt(document.getElementById('episodesPerSeason').value) || 1
+            };
+
+            if (editIndex !== "") {
+                localMediaDatabase[parseInt(editIndex)] = newContent;
+                showToast("কন্টেন্ট সফলভাবে আপডেট করা হয়েছে!");
+            } else {
+                localMediaDatabase.push(newContent);
+                showToast("নতুন কন্টেন্ট সফলভাবে যোগ করা হয়েছে!");
+            }
+
+            database.ref('streamingMediaDatabase').set(localMediaDatabase)
+                .then(() => {
+                    resetFormState();
+                });
+        }
+
+        function prepareEditForm(index) {
+            const item = localMediaDatabase[index];
+            
+            document.getElementById('edit-index').value = index;
+            document.getElementById('form-title').innerText = "কন্টেন্ট এডিট করুন";
+            
+            document.getElementById('title').value = item.title;
+            document.getElementById('category').value = item.category;
+            document.getElementById('rating').value = item.rating;
+            document.getElementById('type').value = item.type;
+            document.getElementById('language').value = item.language || 'Bangla Dubbed';
+            document.getElementById('thumbnail-url').value = item.image || '';
+            document.getElementById('videoUrl-1080').value = item.videoUrl_1080 || '';
+            document.getElementById('videoUrl-720').value = item.videoUrl_720 || '';
+            document.getElementById('videoUrl-480').value = item.videoUrl_480 || '';
+            document.getElementById('totalSeasons').value = item.totalSeasons || 1;
+            document.getElementById('episodesPerSeason').value = item.episodesPerSeason || 1;
+
+            checkCategoryAdvisory();
+            document.getElementById('cancel-btn').style.display = 'inline-flex';
+        }
+
+        function deleteContentFromDb(index) {
+            if (confirm("আপনি কি নিশ্চিতভাবে এই কন্টেন্টটি মুছে ফেলতে চান?")) {
+                localMediaDatabase.splice(index, 1);
+                database.ref('streamingMediaDatabase').set(localMediaDatabase)
+                    .then(() => {
+                        showToast("কন্টেন্টটি ডাটাবেস থেকে ডিলিট করা হয়েছে!");
+                        resetFormState();
+                    });
+            }
+        }
+
+        function resetFormState() {
+            document.getElementById('edit-index').value = "";
+            document.getElementById('form-title').innerText = "নতুন কন্টেন্ট যুক্ত করুন";
+            document.getElementById('content-form').reset();
+            document.getElementById('cancel-btn').style.display = 'none';
+            document.getElementById('category-warning').style.display = 'none';
+        }
+
+        // ====================================================================
+        // AD SYSTEM HANDLER (২টি অবজেক্ট ফিল্ড প্রসেসিং)
+        // ====================================================================
+        async function handleAdUpdate(e) {
+            e.preventDefault();
+
+            const beforeDlImg = await uploadMediaFile('ad-before-dl-file', 'ad-beforeDownload', 'ads');
+            const playerTopImg = await uploadMediaFile('ad-player-top-file', 'ad-playerTop', 'ads');
+            const playerBottomImg = await uploadMediaFile('ad-player-bottom-file', 'ad-playerBottom', 'ads');
+            const preRollVid = await uploadMediaFile('ad-preroll-file', 'ad-preRoll', 'ads');
+            const homeFirstImg = await uploadMediaFile('ad-home-first-file', 'ad-homeFirst', 'ads');
+            const homeSecondImg = await uploadMediaFile('ad-home-second-file', 'ad-homeSecond', 'ads');
+            const homeThirdImg = await uploadMediaFile('ad-home-third-file', 'ad-homeThird', 'ads');
+
+            const updatedAds = {
+                beforeDownload: {
+                    imgUrl: beforeDlImg,
+                    clickUrl: document.getElementById('ad-beforeDownload-click').value || ''
+                },
+                playerTop: {
+                    imgUrl: playerTopImg,
+                    clickUrl: document.getElementById('ad-playerTop-click').value || ''
+                },
+                playerBottom: {
+                    imgUrl: playerBottomImg,
+                    clickUrl: document.getElementById('ad-playerBottom-click').value || ''
+                },
+                preRoll: {
+                    videoUrl: preRollVid,
+                    clickUrl: document.getElementById('ad-preRoll-click').value || ''
+                },
+                homeFirst: {
+                    imgUrl: homeFirstImg,
+                    clickUrl: document.getElementById('ad-homeFirst-click').value || ''
+                },
+                homeSecond: {
+                    imgUrl: homeSecondImg,
+                    clickUrl: document.getElementById('ad-homeSecond-click').value || ''
+                },
+                homeThird: {
+                    imgUrl: homeThirdImg,
+                    clickUrl: document.getElementById('ad-homeThird-click').value || ''
+                }
+            };
+
+            const downloadUrl = document.getElementById('ad-downloadApkUrl').value;
+
+            database.ref('ADMIN_CONFIG/downloadApkUrl').set(downloadUrl);
+            database.ref('ADMIN_CONFIG/ads').set(updatedAds)
+                .then(() => {
+                    showToast("এড সেটিংস সফলভাবে আপডেট করা হয়েছে!");
+                });
+        }
+
+        // ====================================================================
+        // BRANDING & MULTI-BANNER SLIDER HANDLERS
+        // ====================================================================
+        async function handleLogoUpdate(e) {
+            e.preventDefault();
+            const logoUrl = await uploadMediaFile('config-logo-file', 'config-logoUrl', 'branding');
+            const logoText = document.getElementById('config-logoText').value;
+
+            database.ref('ADMIN_CONFIG/logoText').set(logoText);
+            database.ref('ADMIN_CONFIG/logoUrl').set(logoUrl)
+                .then(() => {
+                    showToast("লোগো এবং ব্র্যান্ডিং সফলভাবে আপডেট করা হয়েছে!");
+                });
+        }
+
+        async function handleBannerAdd(e) {
+            e.preventDefault();
+            const bgImage = await uploadMediaFile('banner-bg-file', 'banner-bgImage', 'banners');
+
+            const newBanner = {
+                title: document.getElementById('banner-title').value,
+                name: document.getElementById('banner-name').value,
+                season: document.getElementById('banner-season').value,
+                tag: document.getElementById('banner-tag').value,
+                bgImage: bgImage
+            };
+
+            localBanners.push(newBanner);
+
+            database.ref('ADMIN_CONFIG/banners').set(localBanners)
+                .then(() => {
+                    showToast("নতুন ব্যানার স্লাইড সফলভাবে যোগ করা হয়েছে!");
+                    document.getElementById('banner-title').value = '';
+                    document.getElementById('banner-name').value = '';
+                    document.getElementById('banner-season').value = '';
+                    document.getElementById('banner-tag').value = '';
+                    document.getElementById('banner-bg-file').value = '';
+                    document.getElementById('banner-bgImage').value = '';
+                });
+        }
+
+        function renderBanners() {
+            const container = document.getElementById('banner-list-renderer');
+            if (localBanners.length === 0) {
+                container.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--text-muted);">কোনো ব্যানার সক্রিয় নেই।</div>`;
+                return;
+            }
+
+            container.innerHTML = localBanners.map((banner, index) => `
+                <div class="banner-card">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <img src="${banner.bgImage}" alt="banner">
+                        <div>
+                            <h4 style="font-size: 0.95rem; margin-bottom: 2px;">${banner.title}</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">${banner.name} • ${banner.season}</span>
+                        </div>
+                    </div>
+                    <button class="icon-btn delete" onclick="deleteBanner(${index})" title="মুছে ফেলুন"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteBanner(index) {
+            if (confirm("আপনি কি নিশ্চিতভাবে এই ব্যানার স্লাইডটি সরাতে চান?")) {
+                localBanners.splice(index, 1);
+                database.ref('ADMIN_CONFIG/banners').set(localBanners)
+                    .then(() => {
+                        showToast("ব্যানার স্লাইডটি সফলভাবে সরানো হয়েছে!");
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
